@@ -7,6 +7,7 @@ const meta: Meta<typeof Header> = {
   parameters: {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: "fullscreen",
+    zeroheight: "https://zeroheight.com/0849fc5f0/v/latest/p/1141e3-header",
   },
 };
 
