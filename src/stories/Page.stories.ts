@@ -1,14 +1,15 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { within, userEvent } from '@storybook/test';
+import type { Meta, StoryObj } from "@storybook/react";
+import { within, userEvent } from "@storybook/test";
 
-import { Page } from './Page';
+import { Page } from "./Page";
 
 const meta: Meta<typeof Page> = {
-  title: 'Example/Page',
+  title: "Example/Page",
   component: Page,
   parameters: {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
-    layout: 'fullscreen',
+    layout: "fullscreen",
+    zeroheight: "https://zeroheight.com/0849fc5f0/v/latest/p/50e632-page",
   },
 };
 
@@ -21,7 +22,7 @@ export const LoggedOut: Story = {};
 export const LoggedIn: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const loginButton = await canvas.getByRole('button', {
+    const loginButton = await canvas.getByRole("button", {
       name: /Log in/i,
     });
     await userEvent.click(loginButton);
