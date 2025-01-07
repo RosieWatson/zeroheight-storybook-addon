@@ -1,5 +1,6 @@
-import React, { useCallback } from "react";
-import { H1 } from "storybook/internal/components";
+import React from "react";
+import ReactMarkdown from "react-markdown";
+import { A, H1, H2, H4 } from "storybook/internal/components";
 import { useParameter } from "storybook/internal/manager-api";
 import { styled } from "storybook/internal/theming";
 
@@ -13,6 +14,7 @@ const TabWrapper = styled.div(({ theme }) => ({
   background: theme.background.content,
   padding: "4rem 20px",
   minHeight: "100vh",
+  minWidth: 808,
   boxSizing: "border-box",
 }));
 
@@ -47,6 +49,11 @@ const LoadingSpinner = styled.div`
   }
 `;
 
+const ContentContainer = styled.div`
+  max-height: 800px;
+  overflow-y: auto;
+`;
+
 enum Status {
   loading,
   success,
@@ -57,6 +64,10 @@ export const Tab: React.FC<TabProps> = ({ active }) => {
   const zeroheightUrl = useParameter<string>(KEY);
 
   const [loadingStatus, setLoadingStatus] = React.useState(Status.loading);
+
+  const [pageTitle, setPageTitle] = React.useState("");
+  const [pageIntro, setPageIntro] = React.useState("");
+  const [pageContent, setPageContent] = React.useState("");
 
   async function loadContent() {
     const headers = {
@@ -77,7 +88,11 @@ export const Tab: React.FC<TabProps> = ({ active }) => {
 
       if (response.ok) {
         setLoadingStatus(Status.success);
-        return response.json();
+
+        const resp = await response.json();
+        setPageTitle(resp.data.page.name);
+        setPageIntro(resp.data.page.introduction);
+        setPageContent(resp.data.page.content);
       } else {
         setLoadingStatus(Status.error);
         if (response.status === 401) {
@@ -105,8 +120,31 @@ export const Tab: React.FC<TabProps> = ({ active }) => {
   return (
     <TabWrapper>
       <TabInner>
-        <H1>Zeroheight documentation</H1>
+        <H1>zeroheight documentation</H1>
         {loadingStatus === Status.loading && <LoadingSpinner />}
+
+        {loadingStatus === Status.success && (
+          <div>
+            {pageTitle && <H2>{pageTitle}</H2>}
+            {pageIntro && <H4>{pageIntro}</H4>}
+            {pageContent && (
+              <ContentContainer>
+                <ReactMarkdown>{pageContent}</ReactMarkdown>
+              </ContentContainer>
+            )}
+            <p>
+              See more in{" "}
+              <A
+                href={zeroheightUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                color="#f63e7c"
+              >
+                zeroheight
+              </A>
+            </p>
+          </div>
+        )}
       </TabInner>
     </TabWrapper>
   );

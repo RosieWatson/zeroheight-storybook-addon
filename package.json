@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "description": "Show your zeroheight documentation alongside your components",
   "keywords": [
-    "storybook-addons", "zeroheight", "storybook-addons"
+    "storybook-addons",
+    "zeroheight",
+    "storybook-addons"
   ],
   "repository": {
     "type": "git",
@@ -45,7 +47,8 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@storybook/icons": "^1.2.10"
+    "@storybook/icons": "^1.2.10",
+    "react-markdown": "^9.0.3"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "0.0.0-pr-26654-sha-49d01553",
@@ -99,7 +102,15 @@
   "storybook": {
     "displayName": "zeroheight documentation",
     "supportedFrameworks": [
-      "react", "vue", "angular", "web-components", "ember", "html", "svelte", "preact", "react-native"
+      "react",
+      "vue",
+      "angular",
+      "web-components",
+      "ember",
+      "html",
+      "svelte",
+      "preact",
+      "react-native"
     ],
     "icon": "https://user-images.githubusercontent.com/321738/63501763-88dbf600-c4cc-11e9-96cd-94adadc2fd72.png"
   }
