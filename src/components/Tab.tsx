@@ -58,6 +58,46 @@ export const Tab: React.FC<TabProps> = ({ active }) => {
 
   const [loadingStatus, setLoadingStatus] = React.useState(Status.loading);
 
+  async function loadContent() {
+    const headers = {
+      Accept: "application/json",
+      "X-API-KEY": process.env.ZH_ACCESS_TOKEN,
+      "X-API-CLIENT": process.env.ZH_CLIENT_ID,
+    };
+    const pageId = zeroheightUrl.split("/p/")[1].split("-")[0];
+
+    try {
+      const response = await fetch(
+        `https://zeroheight.com/open_api/v2/pages/${pageId}?format=markdown`,
+        {
+          method: "GET",
+          headers: headers,
+        },
+      );
+
+      if (response.ok) {
+        setLoadingStatus(Status.success);
+        return response.json();
+      } else {
+        setLoadingStatus(Status.error);
+        if (response.status === 401) {
+          console.error("Unauthorized");
+        } else if (response.status === 404) {
+          console.error("Page not found");
+        } else {
+          console.error(`Error ${response.status}: ${response.statusText}`);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      setLoadingStatus(Status.error);
+    }
+  }
+
+  React.useEffect(() => {
+    if (zeroheightUrl) loadContent();
+  }, [zeroheightUrl]);
+
   if (!active) {
     return null;
   }
