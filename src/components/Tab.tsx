@@ -1,6 +1,6 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
-import { A, H1, H2, H4 } from "storybook/internal/components";
+import { A, H1, H2, H4, P } from "storybook/internal/components";
 import { useParameter } from "storybook/internal/manager-api";
 import { styled } from "storybook/internal/theming";
 
@@ -64,12 +64,21 @@ export const Tab: React.FC<TabProps> = ({ active }) => {
   const zeroheightUrl = useParameter<string>(KEY);
 
   const [loadingStatus, setLoadingStatus] = React.useState(Status.loading);
+  const [errorMessage, setErrorMessage] = React.useState("Unknown error");
 
   const [pageTitle, setPageTitle] = React.useState("");
   const [pageIntro, setPageIntro] = React.useState("");
   const [pageContent, setPageContent] = React.useState("");
 
   async function loadContent() {
+    if (!process.env.ZH_ACCESS_TOKEN || !process.env.ZH_CLIENT_ID) {
+      setErrorMessage(
+        "Ensure you have your zeroheight API credentials set up in your environment",
+      );
+      setLoadingStatus(Status.error);
+      return;
+    }
+
     const headers = {
       Accept: "application/json",
       "X-API-KEY": process.env.ZH_ACCESS_TOKEN,
@@ -94,17 +103,18 @@ export const Tab: React.FC<TabProps> = ({ active }) => {
         setPageIntro(resp.data.page.introduction);
         setPageContent(resp.data.page.content);
       } else {
-        setLoadingStatus(Status.error);
         if (response.status === 401) {
-          console.error("Unauthorized");
+          setErrorMessage("Unauthorized. Check the credentials you're using");
         } else if (response.status === 404) {
-          console.error("Page not found");
+          setErrorMessage("Page not found");
         } else {
-          console.error(`Error ${response.status}: ${response.statusText}`);
+          setErrorMessage(`Error ${response.status}: ${response.statusText}`);
         }
+        setLoadingStatus(Status.error);
       }
     } catch (e) {
       console.error(e);
+      setErrorMessage("Unknown error. Check console for more information");
       setLoadingStatus(Status.error);
     }
   }
@@ -132,7 +142,7 @@ export const Tab: React.FC<TabProps> = ({ active }) => {
                 <ReactMarkdown>{pageContent}</ReactMarkdown>
               </ContentContainer>
             )}
-            <p>
+            <P>
               See more in{" "}
               <A
                 href={zeroheightUrl}
@@ -142,9 +152,11 @@ export const Tab: React.FC<TabProps> = ({ active }) => {
               >
                 zeroheight
               </A>
-            </p>
+            </P>
           </div>
         )}
+
+        {loadingStatus === Status.error && <P>{errorMessage}</P>}
       </TabInner>
     </TabWrapper>
   );
